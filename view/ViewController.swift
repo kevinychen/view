@@ -17,6 +17,9 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        print("\(OpenCVWrapper.openCVVersionString())")
+
         // Do any additional setup after loading the view, typically from a nib.
         guard let captureDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
             fatalError("No video capture device")

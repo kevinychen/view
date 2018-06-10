@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		840E7A9920CCE5EB00C293A5 /* OpenCVWrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 840E7A9820CCE5EB00C293A5 /* OpenCVWrapper.mm */; };
+		840E7AAB20CCF15600C293A5 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84E0245320CCE5620060BE3E /* opencv2.framework */; };
 		84D4072620C8F51800AC400B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D4072520C8F51800AC400B /* AppDelegate.swift */; };
 		84D4072820C8F51800AC400B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D4072720C8F51800AC400B /* ViewController.swift */; };
 		84D4072B20C8F51800AC400B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 84D4072920C8F51800AC400B /* Main.storyboard */; };
@@ -15,6 +17,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		840E7A9620CCE5EB00C293A5 /* view-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "view-Bridging-Header.h"; sourceTree = "<group>"; };
+		840E7A9720CCE5EB00C293A5 /* OpenCVWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OpenCVWrapper.h; sourceTree = "<group>"; };
+		840E7A9820CCE5EB00C293A5 /* OpenCVWrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = OpenCVWrapper.mm; sourceTree = "<group>"; };
 		84D4072220C8F51800AC400B /* view.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = view.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		84D4072520C8F51800AC400B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		84D4072720C8F51800AC400B /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -22,6 +27,7 @@
 		84D4072C20C8F51900AC400B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		84D4072F20C8F51900AC400B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		84D4073120C8F51900AC400B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		84E0245320CCE5620060BE3E /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				840E7AAB20CCF15600C293A5 /* opencv2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +47,7 @@
 			children = (
 				84D4072420C8F51800AC400B /* view */,
 				84D4072320C8F51800AC400B /* Products */,
+				84E0245520CCE5680060BE3E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -60,8 +68,19 @@
 				84D4072C20C8F51900AC400B /* Assets.xcassets */,
 				84D4072E20C8F51900AC400B /* LaunchScreen.storyboard */,
 				84D4073120C8F51900AC400B /* Info.plist */,
+				840E7A9720CCE5EB00C293A5 /* OpenCVWrapper.h */,
+				840E7A9820CCE5EB00C293A5 /* OpenCVWrapper.mm */,
+				840E7A9620CCE5EB00C293A5 /* view-Bridging-Header.h */,
 			);
 			path = view;
+			sourceTree = "<group>";
+		};
+		84E0245520CCE5680060BE3E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				84E0245320CCE5620060BE3E /* opencv2.framework */,
+			);
+			path = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -96,6 +115,7 @@
 				TargetAttributes = {
 					84D4072120C8F51800AC400B = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 0930;
 					};
 				};
 			};
@@ -137,6 +157,7 @@
 			files = (
 				84D4072820C8F51800AC400B /* ViewController.swift in Sources */,
 				84D4072620C8F51800AC400B /* AppDelegate.swift in Sources */,
+				840E7A9920CCE5EB00C293A5 /* OpenCVWrapper.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,8 +301,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D7QWX28KQQ;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = view/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -290,6 +316,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kyc.view;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "view/view-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -299,8 +327,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D7QWX28KQQ;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				INFOPLIST_FILE = view/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -309,6 +342,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.kyc.view;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "view/view-Bridging-Header.h";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
