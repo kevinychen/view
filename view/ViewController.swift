@@ -11,7 +11,7 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    let SERVER = "http://192.168.0.2:8080/"
+    let SERVER = "http://192.168.0.2:8080"
 
     var iCapturePhotoOutput: AVCapturePhotoOutput?
 
@@ -100,6 +100,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
             print(error)
         }
         task.resume()
+        performSegue(withIdentifier: "ToSecondView", sender: self)
     }
 
     func photoDataToFormData(data: Data, boundary:String, fileName:String) -> Data {
