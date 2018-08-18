@@ -22,4 +22,9 @@ class SecondViewController: UIViewController {
         }
         imageView.image = UIImage(data: data)
     }
+
+    @IBAction func back(_ sender: Any) {
+        print("back to start screen")
+        dismiss(animated: true, completion: {})
+    }
 }
