@@ -11,6 +11,8 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    let SERVER = "http://192.168.0.2:8080/"
+
     var iCapturePhotoOutput: AVCapturePhotoOutput?
 
     @IBOutlet weak var cameraView: UIImageView!
@@ -54,7 +56,7 @@ class ViewController: UIViewController {
         let photoSettings = AVCapturePhotoSettings()
         photoSettings.isAutoStillImageStabilizationEnabled = true
         photoSettings.isHighResolutionPhotoEnabled = true
-        photoSettings.flashMode = .auto
+        photoSettings.flashMode = .off
         iCapturePhotoOutput?.capturePhoto(with: photoSettings, delegate: self)
     }
 }
@@ -62,11 +64,64 @@ class ViewController: UIViewController {
 extension ViewController: AVCapturePhotoCaptureDelegate {
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         guard let imageData = photo.fileDataRepresentation() else {
-            return
+            return print("failed to get image data")
         }
         guard let capturedImage = UIImage.init(data: imageData, scale: 1.0) else {
-            return
+            return print("failed to capture image")
         }
         print(capturedImage.debugDescription)
+        sendToServer(data: UIImageJPEGRepresentation(capturedImage, 1.0)!)
+    }
+
+    func sendToServer(data: Data) {
+        guard let url: URL = URL(string: "\(SERVER)/upload") else {
+            return print("invalid URL")
+        }
+
+        var request1: URLRequest = URLRequest(url: url)
+
+        request1.httpMethod = "POST"
+
+        let boundary = "Boundary-\(NSUUID().uuidString)"
+        request1.setValue("multipart/form-data; boundary=" + boundary, forHTTPHeaderField: "Content-Type")
+
+        let fullData = photoDataToFormData(data: data, boundary: boundary, fileName: "name")
+        request1.setValue(String(fullData.count), forHTTPHeaderField: "Content-Length")
+
+        request1.httpBody = fullData
+        request1.httpShouldHandleCookies = false
+
+        print("sending")
+        let session = URLSession(configuration: .default)
+        let task = session.dataTask(with: request1) { (data, response, error) in
+            print("response")
+            print(data)
+            print(response)
+            print(error)
+        }
+        task.resume()
+    }
+
+    func photoDataToFormData(data: Data, boundary:String, fileName:String) -> Data {
+        var fullData = Data()
+
+        let lineOne = "--" + boundary + "\r\n"
+        fullData.append(lineOne.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+
+        let lineTwo = "Content-Disposition: form-data; name=\"file\"; filename=\"" + fileName + "\"\r\n"
+        fullData.append(lineTwo.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+
+        let lineThree = "Content-Type: image/jpg\r\n\r\n"
+        fullData.append(lineThree.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+
+        fullData.append(data)
+
+        let lineFive = "\r\n"
+        fullData.append(lineFive.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+
+        let lineSix = "--" + boundary + "--\r\n"
+        fullData.append(lineSix.data(using: String.Encoding.utf8, allowLossyConversion: false)!)
+
+        return fullData
     }
 }
