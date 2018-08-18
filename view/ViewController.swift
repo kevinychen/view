@@ -11,8 +11,6 @@ import UIKit
 
 class ViewController: UIViewController {
 
-    let SERVER = "http://192.168.0.2:8080"
-
     var iCapturePhotoOutput: AVCapturePhotoOutput?
 
     @IBOutlet weak var cameraView: UIImageView!
@@ -74,7 +72,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
     }
 
     func sendToServer(data: Data) {
-        guard let url: URL = URL(string: "\(SERVER)/upload") else {
+        guard let url: URL = URL(string: "\(Constants.SERVER)/upload") else {
             return print("invalid URL")
         }
 
