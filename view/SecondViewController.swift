@@ -11,8 +11,15 @@ import UIKit
 
 class SecondViewController: UIViewController {
 
+    @IBOutlet weak var imageView: UIImageView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        guard let data = State.parsedImageData else {
+            print("Error: no image data loaded")
+            return
+        }
+        imageView.image = UIImage(data: data)
     }
 }
-

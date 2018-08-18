@@ -96,9 +96,12 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
             print(data)
             print(response)
             print(error)
+            State.parsedImageData = data
+            DispatchQueue.main.async {
+                self.performSegue(withIdentifier: "ToSecondView", sender: self)
+            }
         }
         task.resume()
-        performSegue(withIdentifier: "ToSecondView", sender: self)
     }
 
     func photoDataToFormData(data: Data, boundary:String, fileName:String) -> Data {
