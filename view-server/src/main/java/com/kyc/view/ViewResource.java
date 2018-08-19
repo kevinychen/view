@@ -44,9 +44,11 @@ public class ViewResource {
         PIECES_DIR.mkdirs();
         SAVED_PIECES_DIR.mkdirs();
 
-        for (String uploadedFiles : PIECES_DIR.list()) {
-            int newPieceId = Integer.parseInt(uploadedFiles.replaceAll("[^0-9]", ""));
-            currentPieceId.updateAndGet(pieceId -> Math.max(pieceId, newPieceId + 1));
+        for (String uploadedFile : PIECES_DIR.list()) {
+            String newPieceId = uploadedFile.replaceAll("[^0-9]", "");
+            if (!newPieceId.isEmpty()) {
+                currentPieceId.updateAndGet(pieceId -> Math.max(pieceId, Integer.parseInt(newPieceId) + 1));
+            }
         }
         log.info("Initialized current piece id to {}", currentPieceId);
     }
