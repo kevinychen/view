@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     var iCapturePhotoOutput: AVCapturePhotoOutput?
 
     @IBOutlet weak var cameraView: UIImageView!
+    @IBOutlet weak var takePhotoButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -93,14 +95,18 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         let session = URLSession(configuration: .default)
         let task = session.dataTask(with: request1) { (data, response, error) in
             print("response")
-            print(data)
-            print(response)
-            print(error)
+            print(data ?? "no data")
+            print(response ?? "no response")
+            print(error ?? "no error")
             State.parsedImageData = data
             DispatchQueue.main.async {
+                self.takePhotoButton.isHidden = false
+                self.activityIndicator.stopAnimating()
                 self.performSegue(withIdentifier: "ToSecondView", sender: self)
             }
         }
+        self.takePhotoButton.isHidden = true
+        self.activityIndicator.startAnimating()
         task.resume()
     }
 
