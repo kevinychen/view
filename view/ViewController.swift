@@ -12,8 +12,10 @@ import UIKit
 class ViewController: UIViewController {
 
     var iCapturePhotoOutput: AVCapturePhotoOutput?
+    var iVideoPreviewLayer: AVCaptureVideoPreviewLayer?
 
     @IBOutlet weak var cameraView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var takePhotoButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
@@ -21,6 +23,8 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         print("\(OpenCVWrapper.openCVVersionString())")
+
+        imageView.isHidden = true
 
         // Do any additional setup after loading the view, typically from a nib.
         guard let captureDevice = AVCaptureDevice.default(for: AVMediaType.video) else {
@@ -43,6 +47,7 @@ class ViewController: UIViewController {
         videoPreviewLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
         videoPreviewLayer.frame = cameraView.bounds
         cameraView.layer.addSublayer(videoPreviewLayer)
+        iVideoPreviewLayer = videoPreviewLayer
 
         captureSession.startRunning()
     }
@@ -74,6 +79,12 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
     }
 
     func sendToServer(data: Data) {
+        State.imageData = data
+        imageView.image = UIImage(data: data)
+        imageView.isHidden = false
+        takePhotoButton.isHidden = true
+        activityIndicator.startAnimating()
+
         guard let url: URL = URL(string: "\(Constants.SERVER)/upload") else {
             return print("invalid URL")
         }
@@ -100,13 +111,12 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
             print(error ?? "no error")
             State.parsedImageData = data
             DispatchQueue.main.async {
+                self.imageView.isHidden = true
                 self.takePhotoButton.isHidden = false
                 self.activityIndicator.stopAnimating()
                 self.performSegue(withIdentifier: "ToSecondView", sender: self)
             }
         }
-        self.takePhotoButton.isHidden = true
-        self.activityIndicator.startAnimating()
         task.resume()
     }
 
