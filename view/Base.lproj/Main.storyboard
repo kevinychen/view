@@ -114,14 +114,20 @@
                                     <action selector="send:" destination="xpU-qJ-8YI" eventType="touchUpInside" id="mdX-YV-oKU"/>
                                 </connections>
                             </button>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" hidesWhenStopped="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Iy3-Zw-UC7">
+                                <rect key="frame" x="271" y="634" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <viewLayoutGuide key="safeArea" id="RwL-sV-Itu"/>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="Iy3-Zw-UC7" id="Jvz-rR-Qyj"/>
                         <outlet property="coordinatePickerView" destination="kDg-Je-ylT" id="ZkL-dc-tgl"/>
                         <outlet property="flipSwitch" destination="4lA-sh-UPQ" id="hfd-IH-aPb"/>
                         <outlet property="imageView" destination="Ugp-aI-RH6" id="pCJ-Fc-khV"/>
+                        <outlet property="sendButton" destination="krI-bf-6hN" id="f2k-Lv-Bn6"/>
                         <outlet property="sendModeControl" destination="5BW-6R-k4a" id="aY7-a7-I2t"/>
                         <outlet property="suggestedCoordinatesView" destination="a5Q-xH-REq" id="6i0-fa-tlr"/>
                     </connections>

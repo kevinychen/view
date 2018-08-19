@@ -72,6 +72,8 @@ public class ViewResource {
             throw new RuntimeException("Error writing file");
         }
         mapper.writeValue(getParsedPieceFile(pieceId), new Piece(sides));
+
+        log.info("Parsed piece {}", pieceId);
         return new AddPieceResponse(pieceId);
     }
 
@@ -79,6 +81,8 @@ public class ViewResource {
     @Path("piece/{pieceId}/image")
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     public Response getPieceImage(@PathParam("pieceId") String pieceId) throws IOException {
+        log.info("Fetching piece {}", pieceId);
+
         BufferedImage image = ImageIO.read(getPieceFile(pieceId));
         List<Side> sides = mapper.readValue(getParsedPieceFile(pieceId), Piece.class).sides;
 
@@ -94,7 +98,25 @@ public class ViewResource {
         if (!ImageIO.write(image, "png", output)) {
             throw new RuntimeException("Error writing response");
         }
+
+        log.info("Fetched piece {}", pieceId);
         return Response.ok(output.toByteArray()).build();
+    }
+
+    @POST
+    @Path("piece/{pieceId}/save")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public SavePieceResponse savePiece(@PathParam("pieceId") String pieceId, SavePieceRequest request) throws IOException {
+        log.info("Saving piece {} with request {}", pieceId, request);
+
+        Piece piece = mapper.readValue(getParsedPieceFile(pieceId), Piece.class);
+        piece.row = request.row;
+        piece.col = request.col;
+        piece.dir = request.dir;
+        piece.flip = request.flip;
+        mapper.writeValue(getSavedPieceFile(pieceId), piece);
+        return new SavePieceResponse(null);
     }
 
     private static File getPieceFile(String pieceId) {
@@ -103,5 +125,9 @@ public class ViewResource {
 
     private static File getParsedPieceFile(String pieceId) {
         return new File(PIECES_DIR, String.format("piece-%s.yml", pieceId));
+    }
+
+    private static File getSavedPieceFile(String pieceId) {
+        return new File(SAVED_PIECES_DIR, String.format("piece-%s.yml", pieceId));
     }
 }

@@ -84,8 +84,11 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         takePhotoButton.isHidden = true
         activityIndicator.startAnimating()
 
+        NSLog("saving piece")
         addPiece(data: data) {
+            NSLog("saved piece \(State.pieceId ?? "[unknown]")")
             getPieceImage() {
+                NSLog("retrieved parsed image")
                 DispatchQueue.main.async {
                     self.imageView.isHidden = true
                     self.takePhotoButton.isHidden = false

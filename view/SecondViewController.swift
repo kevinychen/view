@@ -16,6 +16,8 @@ class SecondViewController: UIViewController {
     @IBOutlet weak var coordinatePickerView: UIPickerView!
     @IBOutlet weak var suggestedCoordinatesView: UILabel!
     @IBOutlet weak var flipSwitch: UISwitch!
+    @IBOutlet weak var sendButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +49,17 @@ class SecondViewController: UIViewController {
     }
 
     @IBAction func send(_ sender: Any) {
+        sendButton.isHidden = true
+        activityIndicator.startAnimating()
+
+        let flip = flipSwitch.isOn
+        savePiece(flip: flip) {
+            print(State.suggestions ?? "No suggestions")
+            DispatchQueue.main.async {
+                self.sendButton.isHidden = false
+                self.activityIndicator.stopAnimating()
+            }
+        }
     }
 }
 

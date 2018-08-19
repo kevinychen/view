@@ -23,6 +23,29 @@ struct State {
 
     static var rowCoordinate: Int = 0
     static var colCoordinate: Int = 0
+
+    static var suggestions: [Suggestion]?
+}
+
+struct Suggestion: Codable {
+    let row: Int
+    let col: Int
+    let dir: Int
+}
+
+struct AddPieceResponse: Codable {
+    let pieceId: String
+}
+
+struct SavePieceRequest: Codable {
+    let row: Int?
+    let col: Int?
+    let dir: Int?
+    let flip: Bool
+}
+
+struct SavePieceResponse: Codable {
+    let suggestions: [Suggestion]?
 }
 
 func addPiece(data: Data, completionHandler: @escaping () -> Void) {
@@ -44,15 +67,15 @@ func addPiece(data: Data, completionHandler: @escaping () -> Void) {
 
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: request) { (data, response, error) in
-        guard let addPieceResponse = data else {
+        guard let json = data else {
             print(error ?? "error when calling server")
             return
         }
-        guard let json = try? JSONSerialization.jsonObject(with: addPieceResponse, options: []) else {
+        guard let addPieceResponse = try? JSONDecoder().decode(AddPieceResponse.self, from: json) else {
             print("failed to deserialize server response")
             return
         }
-        State.pieceId = (json as! Dictionary<String, String>)["pieceId"]
+        State.pieceId = addPieceResponse.pieceId
         completionHandler()
     }
     task.resume()
@@ -75,6 +98,42 @@ func getPieceImage(completionHandler: @escaping () -> Void) {
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: request) { (data, response, error) in
         State.parsedImageData = data
+        completionHandler()
+    }
+    task.resume()
+}
+
+func savePiece(flip: Bool, completionHandler: @escaping () -> Void) {
+    guard let pieceId = State.pieceId else {
+        print("no piece ID set")
+        return
+    }
+    guard let url: URL = URL(string: "\(Constants.SERVER)/piece/\(pieceId)/save") else {
+        return print("invalid URL")
+    }
+
+    var request: URLRequest = URLRequest(url: url)
+    request.httpMethod = "POST"
+
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+    let savePieceRequest = State.sendInputPosition
+        ? SavePieceRequest(row: State.rowCoordinate, col: State.colCoordinate, dir: 0, flip: flip)
+        : SavePieceRequest(row: nil, col: nil, dir: nil, flip: flip)
+    request.httpBody = try? JSONEncoder().encode(savePieceRequest)
+    request.httpShouldHandleCookies = false
+
+    let session = URLSession(configuration: .default)
+    let task = session.dataTask(with: request) { (data, response, error) in
+        guard let json = data else {
+            print(error ?? "error when calling server")
+            return
+        }
+        guard let savePieceResponse = try? JSONDecoder().decode(SavePieceResponse.self, from: json) else {
+            print("failed to deserialize server response")
+            return
+        }
+        State.suggestions = savePieceResponse.suggestions
         completionHandler()
     }
     task.resume()
