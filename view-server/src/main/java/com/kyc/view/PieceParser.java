@@ -1,7 +1,6 @@
 package com.kyc.view;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -64,16 +63,6 @@ public class PieceParser {
         for (int k = 0; k < 4; k++)
             sides.add(new Side(subsequence(contour, corners[(k + 1) % 4], corners[k])));
         return sides;
-    }
-
-    public void annotateImage(BufferedImage image, List<Side> sides) {
-        Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
-        Graphics g = image.getGraphics();
-        for (int i = 0; i < colors.length; i++) {
-            g.setColor(colors[i]);
-            for (Point p : sides.get(i).points)
-                g.fillOval((int) p.x - 2, (int) p.y - 2, 5, 5);
-        }
     }
 
     private Mat toGrayscaleMat(BufferedImage image) {
