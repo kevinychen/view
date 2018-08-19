@@ -79,6 +79,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
     }
 
     func sendToServer(data: Data) {
+        State.imageData = data
         imageView.image = UIImage(data: data)
         imageView.isHidden = false
         takePhotoButton.isHidden = true
@@ -87,7 +88,7 @@ extension ViewController: AVCapturePhotoCaptureDelegate {
         NSLog("saving piece")
         addPiece(data: data) {
             NSLog("saved piece \(State.pieceId ?? "[unknown]")")
-            getPieceImage() {
+            getPiece() {
                 NSLog("retrieved parsed image")
                 DispatchQueue.main.async {
                     self.imageView.isHidden = true

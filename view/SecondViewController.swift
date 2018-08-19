@@ -9,6 +9,8 @@
 import AVFoundation
 import UIKit
 
+let COLORS = [UIColor.red, UIColor.yellow, UIColor.green, UIColor.blue]
+
 class SecondViewController: UIViewController {
 
     @IBOutlet weak var imageView: UIImageView!
@@ -29,11 +31,30 @@ class SecondViewController: UIViewController {
         coordinatePickerView.selectRow(State.colCoordinate, inComponent: 1, animated: false)
         suggestedCoordinatesView.isHidden = true
 
-        guard let data = State.parsedImageData else {
+        guard let data = State.imageData else {
             print("Error: no image data loaded")
             return
         }
-        imageView.image = UIImage(data: data)
+        let image = UIImage(data: data)!
+        guard let piece = State.piece else {
+            print("no piece set")
+            return
+        }
+        UIGraphicsBeginImageContext(image.size)
+        image.draw(at: CGPoint.zero)
+        let context = UIGraphicsGetCurrentContext()!
+        context.setLineWidth(1.0)
+        for index in 0..<4 {
+            context.setStrokeColor(COLORS[index].cgColor)
+            for point in piece.sides[index].points {
+                context.addEllipse(in: CGRect(x: point.x - 2, y: point.y, width: 5, height: 5))
+                context.drawPath(using: .fillStroke)
+            }
+        }
+        let annotatedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+
+        imageView.image = annotatedImage
     }
 
     @IBAction func back(_ sender: Any) {

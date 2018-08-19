@@ -15,8 +15,9 @@ struct Constants {
 struct State {
     static var pieceId: String?
 
-    // bytes of processed JPG image (with jigsaw piece sides highlighted)
-    static var parsedImageData: Data?
+    static var imageData: Data?
+
+    static var piece: Piece?
 
     // whether the client is sending input positions (instead of asking the server to guess)
     static var sendInputPosition: Bool = true
@@ -25,6 +26,19 @@ struct State {
     static var colCoordinate: Int = 0
 
     static var suggestions: [Suggestion]?
+}
+
+struct Point: Codable {
+    let x: Int
+    let y: Int
+}
+
+struct Side: Codable {
+    let points: [Point]
+}
+
+struct Piece: Codable {
+    let sides: [Side]
 }
 
 struct Suggestion: Codable {
@@ -81,12 +95,12 @@ func addPiece(data: Data, completionHandler: @escaping () -> Void) {
     task.resume()
 }
 
-func getPieceImage(completionHandler: @escaping () -> Void) {
+func getPiece(completionHandler: @escaping () -> Void) {
     guard let pieceId = State.pieceId else {
         print("no piece ID set")
         return
     }
-    guard let url: URL = URL(string: "\(Constants.SERVER)/piece/\(pieceId)/image") else {
+    guard let url: URL = URL(string: "\(Constants.SERVER)/piece/\(pieceId)") else {
         return print("invalid URL")
     }
 
@@ -97,7 +111,15 @@ func getPieceImage(completionHandler: @escaping () -> Void) {
 
     let session = URLSession(configuration: .default)
     let task = session.dataTask(with: request) { (data, response, error) in
-        State.parsedImageData = data
+        guard let json = data else {
+            print(error ?? "error when calling server")
+            return
+        }
+        guard let piece = try? JSONDecoder().decode(Piece.self, from: json) else {
+            print("failed to deserialize server response")
+            return
+        }
+        State.piece = piece
         completionHandler()
     }
     task.resume()

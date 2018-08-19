@@ -1,10 +1,7 @@
 
 package com.kyc.view;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,10 +16,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.glassfish.jersey.media.multipart.FormDataParam;
-import org.opencv.core.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,34 +68,16 @@ public class ViewResource {
         }
         mapper.writeValue(getParsedPieceFile(pieceId), new Piece(sides));
 
-        log.info("Parsed piece {}", pieceId);
         return new AddPieceResponse(pieceId);
     }
 
     @GET
-    @Path("piece/{pieceId}/image")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getPieceImage(@PathParam("pieceId") String pieceId) throws IOException {
+    @Path("piece/{pieceId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Piece getPiece(@PathParam("pieceId") String pieceId) throws IOException {
         log.info("Fetching piece {}", pieceId);
 
-        BufferedImage image = ImageIO.read(getPieceFile(pieceId));
-        List<Side> sides = mapper.readValue(getParsedPieceFile(pieceId), Piece.class).sides;
-
-        Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue };
-        Graphics g = image.getGraphics();
-        for (int i = 0; i < colors.length; i++) {
-            g.setColor(colors[i]);
-            for (Point p : sides.get(i).points)
-                g.fillOval((int) p.x - 2, (int) p.y - 2, 5, 5);
-        }
-
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        if (!ImageIO.write(image, "png", output)) {
-            throw new RuntimeException("Error writing response");
-        }
-
-        log.info("Fetched piece {}", pieceId);
-        return Response.ok(output.toByteArray()).build();
+        return mapper.readValue(getParsedPieceFile(pieceId), Piece.class);
     }
 
     @POST
