@@ -8,8 +8,8 @@
 
 struct Constants {
     static let SERVER = "http://192.168.0.2:8080"
-    static let NUM_ROWS = 29
-    static let NUM_COLS = 15
+    static let NUM_ROWS = 60
+    static let NUM_COLS = 84
 }
 
 struct State {
