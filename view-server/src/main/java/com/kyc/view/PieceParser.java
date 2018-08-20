@@ -108,7 +108,7 @@ public class PieceParser {
 
     private boolean isCloseToExpectedDirection(Point point, Point center, double expectedDirectionFromCenter) {
         double direction = Math.atan2(point.y - center.y, point.x - center.x);
-        return Math.abs(getClosestEquivalentAngle(direction, expectedDirectionFromCenter) - expectedDirectionFromCenter) < Math.PI / 8;
+        return Math.abs(getClosestEquivalentAngle(direction, expectedDirectionFromCenter) - expectedDirectionFromCenter) < Math.PI / 16;
     }
 
     private double similarityToPureCorner(double leftExpectedOrientation, double rightExpectedOrientation, double[] orientations,
