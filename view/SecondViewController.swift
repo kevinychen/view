@@ -16,7 +16,7 @@ class SecondViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var sendModeControl: UISegmentedControl!
     @IBOutlet weak var coordinatePickerView: UIPickerView!
-    @IBOutlet weak var suggestedCoordinatesView: UILabel!
+    @IBOutlet weak var suggestionsView: UITableView!
     @IBOutlet weak var flipSwitch: UISwitch!
     @IBOutlet weak var sendButton: UIButton!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -30,7 +30,9 @@ class SecondViewController: UIViewController {
         coordinatePickerView.selectRow(State.rowCoordinate, inComponent: 0, animated: false)
         coordinatePickerView.selectRow(State.colCoordinate, inComponent: 1, animated: false)
         coordinatePickerView.isHidden = false
-        suggestedCoordinatesView.isHidden = true
+        suggestionsView.dataSource = self
+        suggestionsView.delegate = self
+        suggestionsView.isHidden = true
 
         guard let data = State.imageData else {
             print("Error: no image data loaded")
@@ -67,7 +69,7 @@ class SecondViewController: UIViewController {
         let sendInputPosition = sender.selectedSegmentIndex == 0;
         State.sendInputPosition = sendInputPosition
         coordinatePickerView.isHidden = !sendInputPosition
-        suggestedCoordinatesView.isHidden = sendInputPosition
+        suggestionsView.isHidden = sendInputPosition
     }
 
     @IBAction func send(_ sender: Any) {
@@ -77,7 +79,7 @@ class SecondViewController: UIViewController {
         let flip = flipSwitch.isOn
         savePiece(flip: flip) {
             DispatchQueue.main.async {
-                self.suggestedCoordinatesView.text = State.suggestions.map{ $0.description }.joined(separator: "\n")
+                self.suggestionsView.reloadData()
                 self.sendButton.isHidden = false
                 self.activityIndicator.stopAnimating()
             }
@@ -104,5 +106,17 @@ extension SecondViewController: UIPickerViewDelegate, UIPickerViewDataSource {
         } else {
             State.colCoordinate = row
         }
+    }
+}
+
+extension SecondViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return State.suggestions.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "suggestionCell", for: indexPath)
+        cell.textLabel?.text = State.suggestions[indexPath.row].description
+        return cell
     }
 }

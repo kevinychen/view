@@ -41,24 +41,16 @@ struct Piece: Codable {
     let sides: [Side]
 }
 
+let DIRECTIONS = ["right-side up", "rotated left", "upside-down", "rotated right"]
+
 struct Suggestion: Codable, CustomStringConvertible {
     let row: Int
     let col: Int
     let dir: Int
+    let score: Double
 
     var description: String {
-        switch (dir) {
-        case 0:
-            return "(\(row), \(col))"
-        case 1:
-            return "(\(row), \(col)) rotated left"
-        case 2:
-            return "(\(row), \(col)) upside-down"
-        case 3:
-            return "(\(row), \(col)) rotated right"
-        default:
-            return "unknown"
-        }
+        return "(\(row), \(col)) \(DIRECTIONS[dir]) (\(score))"
     }
 }
 
