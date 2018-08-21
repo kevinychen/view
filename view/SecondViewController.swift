@@ -29,10 +29,10 @@ class SecondViewController: UIViewController {
         coordinatePickerView.delegate = self
         coordinatePickerView.selectRow(State.rowCoordinate, inComponent: 0, animated: false)
         coordinatePickerView.selectRow(State.colCoordinate, inComponent: 1, animated: false)
-        coordinatePickerView.isHidden = false
+        coordinatePickerView.isHidden = !State.sendInputPosition
         suggestionsView.dataSource = self
         suggestionsView.delegate = self
-        suggestionsView.isHidden = true
+        suggestionsView.isHidden = State.sendInputPosition
 
         guard let data = State.imageData else {
             print("Error: no image data loaded")
@@ -62,6 +62,7 @@ class SecondViewController: UIViewController {
 
     @IBAction func back(_ sender: Any) {
         print("back to start screen")
+        State.suggestions = []
         dismiss(animated: true, completion: {})
     }
 
