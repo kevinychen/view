@@ -7,7 +7,7 @@
 //
 
 struct Constants {
-    static let SERVER = "http://192.168.0.2:8080"
+    static let SERVER = "http://192.168.0.43:8080"
     static let NUM_ROWS = 60
     static let NUM_COLS = 84
 }
@@ -25,7 +25,7 @@ struct State {
     static var rowCoordinate: Int = 0
     static var colCoordinate: Int = 0
 
-    static var suggestions: [Suggestion]?
+    static var suggestions: [Suggestion] = []
 }
 
 struct Point: Codable {
@@ -41,10 +41,25 @@ struct Piece: Codable {
     let sides: [Side]
 }
 
-struct Suggestion: Codable {
+struct Suggestion: Codable, CustomStringConvertible {
     let row: Int
     let col: Int
     let dir: Int
+
+    var description: String {
+        switch (dir) {
+        case 0:
+            return "(\(row), \(col))"
+        case 1:
+            return "(\(row), \(col)) rotated left"
+        case 2:
+            return "(\(row), \(col)) upside-down"
+        case 3:
+            return "(\(row), \(col)) rotated right"
+        default:
+            return "unknown"
+        }
+    }
 }
 
 struct AddPieceResponse: Codable {
@@ -59,7 +74,7 @@ struct SavePieceRequest: Codable {
 }
 
 struct SavePieceResponse: Codable {
-    let suggestions: [Suggestion]?
+    let suggestions: [Suggestion]
 }
 
 func addPiece(data: Data, completionHandler: @escaping () -> Void) {

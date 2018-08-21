@@ -29,6 +29,7 @@ class SecondViewController: UIViewController {
         coordinatePickerView.delegate = self
         coordinatePickerView.selectRow(State.rowCoordinate, inComponent: 0, animated: false)
         coordinatePickerView.selectRow(State.colCoordinate, inComponent: 1, animated: false)
+        coordinatePickerView.isHidden = false
         suggestedCoordinatesView.isHidden = true
 
         guard let data = State.imageData else {
@@ -75,8 +76,8 @@ class SecondViewController: UIViewController {
 
         let flip = flipSwitch.isOn
         savePiece(flip: flip) {
-            print(State.suggestions ?? "No suggestions")
             DispatchQueue.main.async {
+                self.suggestedCoordinatesView.text = State.suggestions.map{ $0.description }.joined(separator: "\n")
                 self.sendButton.isHidden = false
                 self.activityIndicator.stopAnimating()
             }

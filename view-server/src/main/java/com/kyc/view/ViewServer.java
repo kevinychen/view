@@ -13,9 +13,10 @@ public class ViewServer extends Application<Configuration> {
     @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
         PieceParser pieceParser = new PieceParser();
+        PieceTester pieceTester = new PieceTester();
 
         environment.jersey().register(new MultiPartFeature());
-        environment.jersey().register(new ViewResource(pieceParser));
+        environment.jersey().register(new ViewResource(pieceParser, pieceTester));
     }
 
     public static void main(String[] args) throws Exception {

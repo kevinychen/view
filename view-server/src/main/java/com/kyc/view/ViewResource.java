@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.collect.ImmutableList;
 
 import net.coobird.thumbnailator.Thumbnails;
 
@@ -33,22 +34,20 @@ public class ViewResource {
     private static final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
     public static final File PIECES_DIR = new File("./data/pieces");
-    public static final File SAVED_PIECES_DIR = new File("./data/saved");
 
     private final PieceParser pieceParser;
+    private final PieceTester pieceTester;
     private final AtomicInteger currentPieceId = new AtomicInteger();
 
-    public ViewResource(PieceParser pieceParser) {
+    public ViewResource(PieceParser pieceParser, PieceTester pieceTester) {
         this.pieceParser = pieceParser;
+        this.pieceTester = pieceTester;
 
         PIECES_DIR.mkdirs();
-        SAVED_PIECES_DIR.mkdirs();
 
-        for (String uploadedFile : PIECES_DIR.list()) {
+        for (String uploadedFile : PIECES_DIR.list((file, name) -> name.endsWith(".yml"))) {
             String newPieceId = uploadedFile.replaceAll("[^0-9]", "");
-            if (!newPieceId.isEmpty()) {
-                currentPieceId.updateAndGet(pieceId -> Math.max(pieceId, Integer.parseInt(newPieceId) + 1));
-            }
+            currentPieceId.updateAndGet(pieceId -> Math.max(pieceId, Integer.parseInt(newPieceId) + 1));
         }
         log.info("Initialized current piece id to {}", currentPieceId);
     }
@@ -94,8 +93,14 @@ public class ViewResource {
         piece.col = request.col;
         piece.dir = request.dir;
         piece.flip = request.flip;
-        mapper.writeValue(getSavedPieceFile(pieceId), piece);
-        return new SavePieceResponse(null);
+        pieceTester.save(pieceId, piece);
+
+        if (piece.dir != null)
+            return new SavePieceResponse(ImmutableList.of());
+
+        List<Suggestion> suggestions = pieceTester.findSuggestions(piece);
+        log.info("Found {} suggestions: {}", suggestions.size(), suggestions);
+        return new SavePieceResponse(suggestions);
     }
 
     private static File getPieceFile(String pieceId) {
@@ -104,9 +109,5 @@ public class ViewResource {
 
     private static File getParsedPieceFile(String pieceId) {
         return new File(PIECES_DIR, String.format("piece-%s.yml", pieceId));
-    }
-
-    private static File getSavedPieceFile(String pieceId) {
-        return new File(SAVED_PIECES_DIR, String.format("piece-%s.yml", pieceId));
     }
 }
