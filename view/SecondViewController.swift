@@ -78,7 +78,7 @@ class SecondViewController: UIViewController {
         activityIndicator.startAnimating()
 
         let flip = flipSwitch.isOn
-        savePiece(flip: flip) {
+        processPiece(flip: flip) {
             DispatchQueue.main.async {
                 self.suggestionsView.reloadData()
                 self.sendButton.isHidden = false

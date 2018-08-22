@@ -82,25 +82,27 @@ public class ViewResource {
     }
 
     @POST
-    @Path("piece/{pieceId}/save")
+    @Path("piece/{pieceId}/process")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public SavePieceResponse savePiece(@PathParam("pieceId") String pieceId, SavePieceRequest request) throws IOException {
-        log.info("Saving piece {} with request {}", pieceId, request);
+    public ProcessPieceResponse processPiece(@PathParam("pieceId") String pieceId, ProcessPieceRequest request) throws IOException {
+        log.info("Processing piece {} with request {}", pieceId, request);
 
         Piece piece = mapper.readValue(getParsedPieceFile(pieceId), Piece.class);
         piece.row = request.row;
         piece.col = request.col;
         piece.dir = request.dir;
         piece.flip = request.flip;
-        pieceTester.save(pieceId, piece);
 
-        if (piece.dir != null)
-            return new SavePieceResponse(ImmutableList.of());
-
-        List<Suggestion> suggestions = pieceTester.findSuggestions(piece);
-        log.info("Found {} suggestions: {}", suggestions.size(), suggestions);
-        return new SavePieceResponse(suggestions);
+        if (piece.dir != null) {
+            pieceTester.save(pieceId, piece);
+            log.info("Saved piece {}", pieceId);
+            return new ProcessPieceResponse(ImmutableList.of());
+        } else {
+            List<Suggestion> suggestions = pieceTester.findSuggestions(piece);
+            log.info("Found {} suggestions: {}", suggestions.size(), suggestions);
+            return new ProcessPieceResponse(suggestions);
+        }
     }
 
     private static File getPieceFile(String pieceId) {

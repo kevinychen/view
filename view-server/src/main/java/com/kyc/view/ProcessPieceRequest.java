@@ -3,7 +3,7 @@ package com.kyc.view;
 import lombok.Data;
 
 @Data
-public class SavePieceRequest {
+public class ProcessPieceRequest {
     Integer row;
     Integer col;
     Integer dir;

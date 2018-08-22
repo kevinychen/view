@@ -86,17 +86,19 @@ public class PieceTester {
             int ncol = col + dcol[i];
             if (nrow < 0 || nrow >= height || ncol < 0 || ncol >= height || pieces[nrow][ncol] == null)
                 continue;
-            List<Point> points = piece.sides.get(i).points;
-            List<Point> neighboringPoints = pieces[nrow][ncol].sides.get((i + 2) % 4).points;
-            List<Point> reversedNeighboringPoints = new ArrayList<>(neighboringPoints);
-            Collections.reverse(reversedNeighboringPoints);
-            List<Point> normalizedPoints = normalize(points);
-            List<Point> normalizedNeighboringPoints = normalize(reversedNeighboringPoints);
-            double score = 1.0 / difference(normalizedPoints, normalizedNeighboringPoints);
+            List<Point> points = normalize(piece.sides.get(i).points);
+            List<Point> neighboringPoints = normalize(reverse(pieces[nrow][ncol].sides.get((i + 2) % 4)).points);
+            double score = 1.0 / difference(points, neighboringPoints);
             if (score > maxScore)
                 maxScore = score;
         }
         return maxScore;
+    }
+
+    private static Side reverse(Side side) {
+        List<Point> reversed = new ArrayList<>(side.points);
+        Collections.reverse(reversed);
+        return new Side(reversed);
     }
 
     private static List<Point> normalize(List<Point> points) {
@@ -114,15 +116,24 @@ public class PieceTester {
     private static OrientedPiece orient(Piece piece) {
         List<Side> sides = new ArrayList<>(piece.sides);
         if (piece.flip != null && piece.flip) {
-            Side temp = sides.set(0, sides.get(2));
-            sides.set(2, temp);
+            sides = ImmutableList.of(
+                reverse(flip(sides.get(2))),
+                reverse(flip(sides.get(1))),
+                reverse(flip(sides.get(0))),
+                reverse(flip(sides.get(3))));
         }
         if (piece.dir != null)
-            sides = ImmutableList.<Side>builder()
-                    .addAll(sides.subList(piece.dir, 4))
-                    .addAll(sides.subList(0, piece.dir))
-                    .build();
+            sides = ImmutableList.<Side> builder()
+                .addAll(sides.subList(piece.dir, 4))
+                .addAll(sides.subList(0, piece.dir))
+                .build();
         return new OrientedPiece(sides);
+    }
+
+    private static Side flip(Side side) {
+        return new Side(side.points.stream()
+            .map(p -> new Point(-p.x, p.y))
+            .collect(Collectors.toList()));
     }
 
     private static double difference(List<Point> side1, List<Point> side2) {

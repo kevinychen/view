@@ -132,12 +132,12 @@ func getPiece(completionHandler: @escaping () -> Void) {
     task.resume()
 }
 
-func savePiece(flip: Bool, completionHandler: @escaping () -> Void) {
+func processPiece(flip: Bool, completionHandler: @escaping () -> Void) {
     guard let pieceId = State.pieceId else {
         print("no piece ID set")
         return
     }
-    guard let url: URL = URL(string: "\(Constants.SERVER)/piece/\(pieceId)/save") else {
+    guard let url: URL = URL(string: "\(Constants.SERVER)/piece/\(pieceId)/process") else {
         return print("invalid URL")
     }
 
