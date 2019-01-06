@@ -26,6 +26,7 @@ public class PieceTester {
 
     public static final File SAVED_PIECES_DIR = new File("./data/saved");
     public static final File GRID_FILE = new File("./data/grid.txt");
+    public static final File REMAINING_PIECES_DIR = new File("./data/remaining");
 
     private final int height;
     private final int width;
@@ -54,9 +55,25 @@ public class PieceTester {
         addPiece(piece);
     }
 
-    public List<Suggestion> findSuggestions(Piece piece) throws IOException {
+    public List<PieceSuggestion> findSuggestions(int row, int col) throws IOException {
+        List<PieceSuggestion> suggestions = new ArrayList<>();
+        for (File pieceFile : REMAINING_PIECES_DIR.listFiles(file -> file.getName().endsWith(".yml"))) {
+            Piece piece = mapper.readValue(pieceFile, Piece.class);
+            for (int dir = 0; dir < 4; dir++) {
+                piece.dir = dir;
+                double score = score(row, col, orient(piece));
+                suggestions.add(new PieceSuggestion(pieceFile.getName(), score));
+            }
+        }
+        Collections.sort(suggestions, Comparator.comparingDouble(suggestion -> -suggestion.score));
+        while (suggestions.size() > 10)
+            suggestions = suggestions.subList(0, 10);
+        return suggestions;
+    }
+
+    public List<LocationSuggestion> findSuggestions(Piece piece) throws IOException {
         Integer originalDir = piece.dir;
-        List<Suggestion> suggestions = new ArrayList<>();
+        List<LocationSuggestion> suggestions = new ArrayList<>();
         for (int row = 0; row < height; row++)
             for (int col = 0; col < width; col++) {
                 if (used[row][col])
@@ -64,7 +81,7 @@ public class PieceTester {
                 for (int dir = 0; dir < 4; dir++) {
                     piece.dir = dir;
                     double score = score(row, col, orient(piece));
-                    suggestions.add(new Suggestion(row, col, dir, score));
+                    suggestions.add(new LocationSuggestion(row, col, dir, score));
                 }
             }
         piece.dir = originalDir;
@@ -80,19 +97,19 @@ public class PieceTester {
     }
 
     private double score(int row, int col, OrientedPiece piece) {
-        double maxScore = 0;
+        double minScore = Double.MAX_VALUE;
         for (int i = 0; i < 4; i++) {
             int nrow = row + drow[i];
             int ncol = col + dcol[i];
-            if (nrow < 0 || nrow >= height || ncol < 0 || ncol >= height || pieces[nrow][ncol] == null)
+            if (nrow < 0 || nrow >= height || ncol < 0 || ncol >= width || pieces[nrow][ncol] == null)
                 continue;
             List<Point> points = normalize(piece.sides.get(i).points);
             List<Point> neighboringPoints = normalize(reverse(pieces[nrow][ncol].sides.get((i + 2) % 4)).points);
             double score = 1.0 / difference(points, neighboringPoints);
-            if (score > maxScore)
-                maxScore = score;
+            if (score < minScore)
+                minScore = score;
         }
-        return maxScore;
+        return minScore;
     }
 
     private static Side reverse(Side side) {

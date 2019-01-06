@@ -49,6 +49,8 @@ public class PieceParser {
                     min_ssd = ssd;
                 }
             }
+            if (min_ssd_i == -1)
+                throw new RuntimeException("Failed to parse piece");
             corners[k] = min_ssd_i;
         }
 

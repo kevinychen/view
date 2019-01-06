@@ -99,7 +99,7 @@ public class ViewResource {
             log.info("Saved piece {}", pieceId);
             return new ProcessPieceResponse(ImmutableList.of());
         } else {
-            List<Suggestion> suggestions = pieceTester.findSuggestions(piece);
+            List<LocationSuggestion> suggestions = pieceTester.findSuggestions(piece);
             log.info("Found {} suggestions: {}", suggestions.size(), suggestions);
             return new ProcessPieceResponse(suggestions);
         }

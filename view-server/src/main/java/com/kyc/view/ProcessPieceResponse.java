@@ -6,5 +6,5 @@ import lombok.Data;
 
 @Data
 public class ProcessPieceResponse {
-    final List<Suggestion> suggestions;
+    final List<LocationSuggestion> suggestions;
 }
